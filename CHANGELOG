@@ -1,0 +1,19 @@
+v. 1.0 to 1.1
+----------------------------
+
+WHAT: Unknown cells are now seen as Free cells for base skeleton (before
+pruning).  
+
+REASON: In robotics, we use occupancy grids that classify the world as
+Occupied, Free, and Unknown.  Using laser range finders, occupancy
+grids often get lots of Free cells next to Unknown cells near the
+frontiers.  v. 1.0 ignored Unknown cells (they could not "flip" during
+the thinning process).  This resulted in lots of spurs near frontiers.
+By treating Unknown cells as Free during the thinning stage, Unknown
+cells are allowed to "flip", thus regions of Unknown cells are seen as
+regions of Free space.  This gets rid of these spurs.
+
+EFFECTS: Most users that only care about Occupied and Free cells will
+notice no difference.  Users that do use all three bits of information
+and run this a continuous loop for real-time applications, might
+notice some slight slowdown.

@@ -1,0 +1,123 @@
+
+EVG-THIN v1.1: A Thinning Approximation to the Extended Voronoi Graph
+
+Copyright (C) 2006 - Patrick Beeson  (pbeeson@cs.utexas.edu)
+This program is released under the GNU General Public License (GPL).
+See COPYING for details.
+
+----------------------------------
+
+This program implements an extension of the pixel-based "thinning"
+algorithm that finds skeletons of bitmaps.  The classic thinning
+algorithm is a fast approximation of the Voronoi diagram; however,
+this software also approximates the Extended Voronoi graph.  This code
+was written to be applied in real-time to occupancy grids (from the
+mobile robotics literature) where cells are either occupied, free, or
+unknown, but it should work on bitmap images for other domains.
+
+Relevant Citations:
+
+Classic Thinning Algorithm: 
+Zhang and Suen, 1984, "A Fast Parallel Algorithm for Thinning Digital
+Patterns." Communications of the ACM, vol. 27, no. 3, pp. 236-239.
+
+Extended Voronoi Graph:
+Beeson, Jong, and Kuipers, 2005, "Towards autonomous topological place
+detection using the Extended Voronoi Graph." IEEE International
+Conference on Robotics and Automation (ICRA-05).
+
+----------------------------------
+
+See CHANGELOG for revision notes.
+
+Installation
+------------
+  $ make
+
+
+Running
+-------
+  $ ./test -image-file FILENAME1 <options>
+
+FILENAME1 must be a .ppm, .pgm, or .pnm file.
+
+options: 
+
+-output-file FILENAME2 : By default the output file name is the input
+	     filename with '_skeleton.ppm' appended to the end.
+
+-min-unknown N : The minimum greyscale value (1-254) of unknown cells.
+	     Occupied cells are 0-(N-1).
+
+-max-unknown M : The maximum greyscale value (1-254) of unknown
+	     cells. Free cells are (M+1)-255.     
+
+-pruning [0|1] : Turns pruning on or off.  Pruning removes ALL
+	 "branches" of the skeleton EXCEPT those that meet one of
+	 these conditions: 1) The branch touches the edge of the grid,
+	 2) the branch touches unknown cells.  By default, pruning is
+	 on.
+
+-min-distance R : Bleeds obstacles by R cells before calculating
+	      skeleton.  This removes branches that come too close to
+	      obstacles.
+
+-max-distance S : If the skeleton gets more the S cells from the
+	      nearest occupied cells, it switches to following the
+	      occupied cells S away.
+	      
+-robot_loc X Y : This location is used to select which skeleton is
+	   valid, given complex images with multiple, disjoint
+	   skeletons.  By default, the "robot" is located at the
+	   center of the image.
+
+-robot-close [0|1] : The robot location (see above) is used to choose
+	     which skeleton is valid (if multiple exist).  This is
+	     done by Euclidean distance between the robot's location
+	     at the skeletal points.  This option turn off that
+	     checking except for points where the robot's distance is
+	     within the distance of the skeletal point to its closest
+	     obstacle.  By default, this is turned on.
+
+
+Examples
+--------
+
+ $ ./test -image-file test1.pgm
+
+ output : test1_skeleton.ppm 
+ 
+ Basically, the Voronoi graph of the local occupancy grid of a robot.
+
+
+ $ ./test -image-file test2.pgm -output-file test2_outA.ppm
+ 
+ output: test2_outA.ppm 
+ 
+ Notice that because the skeleton does not touch the edges (or
+ unknown, grey cells), pruning removes the skeleton.
+
+
+ $ ./ test -image-file test2.pgm -output-file test2_outB.ppm -pruning 0
+
+ output: test2_outB.ppm 
+ 
+ Because we turned off pruning, the skeleton now appears in the output image.
+
+
+ $ ./ test -image-file test2.pgm -output-file test2_outC.ppm
+ -pruning 0 -max_distance 10 -robot-close 0
+
+ output: test2_outC.ppm 
+
+ Here, we set a maximum distance the skeleton can be from occupied
+ cells.  Because the robot's location is by default at the center of
+ the image, we turn off 'robot-close' because the robot is not with 10
+ cells of any point on the skeleton.  
+
+ Try turning 'robot-close' on (default) and the skeleton disappears in
+ the output image. 
+
+ Even with -robot-close turned on, we can get the output to include
+ the skeleton by using the 'robot-loc' option.
+ 
