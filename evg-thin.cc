@@ -22,6 +22,8 @@
 
 *********************************************************************/
 
+#include <string.h>
+#include <stdlib.h>
 #include "evg-thin.hh"
 #include "utils.hh"
 #include <iostream>
