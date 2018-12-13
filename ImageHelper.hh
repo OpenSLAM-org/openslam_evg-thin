@@ -26,6 +26,8 @@
 #ifndef ImageHelper_h 
 #define ImageHelper_h 1
 
+#include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
 
